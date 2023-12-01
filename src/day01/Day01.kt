@@ -15,7 +15,6 @@ fun main(){
 
         val replacedInput = input.map {it.replace(regex) { matchResult ->
             val matchedValue = (1..10).firstNotNullOfOrNull { matchResult.groupValues[it] }
-            println(matchResult.groupValues)
             replacementValues[matchedValue] ?: matchResult.value
             }
         }
