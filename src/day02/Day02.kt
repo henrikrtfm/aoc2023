@@ -24,15 +24,15 @@ fun main() {
 }
 
 data class Game(
-    val sets: Set<CubeSet>
+    val cubesets: Set<CubeSet>
 ){
     companion object{
         fun isPossible(game: Game, red: Int, blue: Int, green: Int): Boolean{
-            return !(game.sets.any{ set -> (set.blue > blue) or (set.red > red) or (set.green > green) })
+            return !(game.cubesets.any{ cubeset -> (cubeset.blue > blue) or (cubeset.red > red) or (cubeset.green > green) })
         }
 
         fun powerCubes(game: Game): Int{
-            return game.sets.maxOf{ set -> set.blue} * game.sets.maxOf { set -> set.red } * game.sets.maxOf { set -> set.green }
+            return game.cubesets.maxOf{ cubeset -> cubeset.blue} * game.cubesets.maxOf { cubeset -> cubeset.red } * game.cubesets.maxOf { cubeset -> cubeset.green }
         }
     }
 }
