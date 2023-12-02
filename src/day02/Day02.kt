@@ -13,7 +13,7 @@ fun main() {
     }
 
     fun part2(games: List<Game>): Int{
-        return games.map { game -> Game.minPowerCubes(game) }.sumOf { it }
+        return games.map { game -> Game.powerCubes(game) }.sumOf { it }
     }
 
     val input = resourceAsListOfString("src/day02/Day02.txt")
@@ -31,7 +31,7 @@ data class Game(
             return !(game.sets.any{ set -> (set.blue > blue) or (set.red > red) or (set.green > green) })
         }
 
-        fun minPowerCubes(game: Game): Int{
+        fun powerCubes(game: Game): Int{
             return game.sets.maxOf{ set -> set.blue} * game.sets.maxOf { set -> set.red } * game.sets.maxOf { set -> set.green }
         }
     }
