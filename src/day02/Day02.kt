@@ -9,7 +9,7 @@ fun main() {
     }
 
     fun part1(red: Int, blue: Int, green: Int, games: List<Game>): Int{
-        return games.mapIndexed { index, game -> if (Game.checkPossibility(game, red, blue, green)) index+1 else 0 }.sumOf{ it }
+        return games.mapIndexed { index, game -> if (Game.isPossible(game, red, blue, green)) index+1 else 0 }.sumOf{ it }
     }
 
     fun part2(games: List<Game>): Int{
@@ -27,7 +27,7 @@ data class Game(
     val sets: Set<CubeSet>
 ){
     companion object{
-        fun checkPossibility(game: Game, red: Int, blue: Int, green: Int): Boolean{
+        fun isPossible(game: Game, red: Int, blue: Int, green: Int): Boolean{
             return !(game.sets.any{ set -> (set.blue > blue) or (set.red > red) or (set.green > green) })
         }
 
