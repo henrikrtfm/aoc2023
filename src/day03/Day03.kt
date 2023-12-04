@@ -8,7 +8,7 @@ fun main(){
     val neighbors = sequenceOf(-1 to 0, 0 to -1, 0 to 1, 1 to 0, -1 to 1, -1 to -1, 1 to 1, 1 to -1)
     val parts = mutableSetOf<Part>()
     val symbols = mutableSetOf<Symbol>()
-    val input = resourceAsListOfString("src/day03/Day03.txt")
+    val input = resourceAsListOfString("src/day03/Day03_sample.txt")
 
     fun createPoints(first: Int, start: Int, end: Int): Set<Point>{
         val newSet = mutableSetOf<Point>()
@@ -31,26 +31,27 @@ fun main(){
                         val indices = Regex("""\$it""").findAll(row).map { it.range.first }.toList()
                         indices.forEach { indice -> symbols.add(Symbol(it, Point(indexRow, indice)))}
                     }
-                    else -> parts.add(Part(indexRow, it.toInt(), createPoints(indexRow, row.indexOf(it), row.indexOf(it)+it.length)))
+                    else -> parts.add(Part(Pair(indexRow, index), it.toInt(), createPoints(indexRow, row.indexOf(it), row.indexOf(it)+it.length)))
                 }
             }
         }
+
     }
 
     fun part1(): Int{
-        val partNumbers = mutableSetOf<Pair<Int, Int>>()
+        val partNumbers = mutableSetOf<Pair<Pair<Int, Int>, Int>>()
         symbols.forEach { symbol ->
             val adjacentPoints = neighbors.map { it + symbol.point }.toSet()
             partNumbers.addAll(parts.map { part -> Part.returnNumberIfIntersecting(part, adjacentPoints) })
 
         }
-        println(partNumbers.filterNot { it.second == 0 })
+        //println(partNumbers.filterNot { it.second == 0 })
         return partNumbers.sumOf { it.second }
     }
 
     parseInput(input)
-    println(parts)
-    println(symbols)
+    println(parts.filter { it -> it.number == 874 })
+    println(symbols.filter { it.point.first ==1 })
     println(part1())
 }
 
@@ -62,15 +63,15 @@ data class Symbol(
     val point: Point
 )
 data class Part(
-    val id: Int,
+    val id: Pair<Int,Int>,
     val number: Int,
     val points: Set<Point>
 ){
     companion object{
-        fun returnNumberIfIntersecting(part: Part, points: Set<Point>): Pair<Int, Int> {
+        fun returnNumberIfIntersecting(part: Part, points: Set<Point>): Pair<Pair<Int,Int>, Int> {
             return when{
                 (part.points intersect points).isNotEmpty()-> Pair(part.id,part.number)
-                else -> Pair(0,0)
+                else -> Pair(Pair(0,0), 0)
             }
         }
     }
