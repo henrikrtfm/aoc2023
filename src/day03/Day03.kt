@@ -8,7 +8,7 @@ fun main(){
     val neighbors = sequenceOf(-1 to 0, 0 to -1, 0 to 1, 1 to 0, -1 to 1, -1 to -1, 1 to 1, 1 to -1)
     val parts = mutableSetOf<Part>()
     val symbols = mutableSetOf<Symbol>()
-    val input = resourceAsListOfString("src/day03/Day03_sample.txt")
+    val input = resourceAsListOfString("src/day03/Day03.txt")
 
     fun createPoints(first: Int, start: Int, end: Int): Set<Point>{
         val newSet = mutableSetOf<Point>()
@@ -26,12 +26,16 @@ fun main(){
             val partsOrSymbols = row.split(".").filterNot { it.isEmpty() }
                 .map { it.split(regex) }.flatten().filterNot { it.isEmpty() }
             partsOrSymbols.forEachIndexed() { index, it ->
+
                 when {
                     it.toIntOrNull() == null -> {
                         val indices = Regex("""\$it""").findAll(row).map { it.range.first }.toList()
                         indices.forEach { indice -> symbols.add(Symbol(it, Point(indexRow, indice)))}
                     }
-                    else -> parts.add(Part(Pair(indexRow, index), it.toInt(), createPoints(indexRow, row.indexOf(it), row.indexOf(it)+it.length)))
+                    else -> {
+                        val indices = Regex("""$it""").findAll(row).map { it.range.first }.toList()
+                        indices.forEach {  indice -> parts.add(Part(Pair(indexRow, index), it.toInt(), createPoints(indexRow, indice, indice+it.length)))}
+                    }
                 }
             }
         }
@@ -45,13 +49,13 @@ fun main(){
             partNumbers.addAll(parts.map { part -> Part.returnNumberIfIntersecting(part, adjacentPoints) })
 
         }
-        //println(partNumbers.filterNot { it.second == 0 })
+        println(partNumbers.filterNot { it.second == 0 }.count())
         return partNumbers.sumOf { it.second }
     }
 
     parseInput(input)
-    println(parts.filter { it -> it.number == 874 })
-    println(symbols.filter { it.point.first ==1 })
+    println(parts.count())
+    println(symbols.count())
     println(part1())
 }
 
