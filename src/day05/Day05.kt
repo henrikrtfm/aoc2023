@@ -1,6 +1,7 @@
 package day05
 
 import utils.Resources.resourceAsText
+import kotlin.math.min
 
 typealias Range = List<Long>
 typealias Ranges = List<Range>
@@ -34,11 +35,16 @@ fun main(){
     }
 
     fun part2(seeds: List<Range>): Long{
-        val locations = mutableListOf<Long>()
+        val locations = mutableSetOf<Long>()
         seeds.forEach { range ->
+            var minLocation: Long = 0
             for(i in range.first()..range.last()+range.first()){
-                locations.add(findLocation(i))
+                val newLocation = findLocation(i)
+                if((minLocation == 0.toLong()) or (newLocation < minLocation) ){
+                    minLocation = newLocation
+                }
             }
+            locations.add(minLocation)
         }
         return locations.min()
     }
