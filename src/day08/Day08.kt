@@ -1,6 +1,7 @@
 package day08
 
 import utils.Resources.resourceAsListOfString
+import utils.Functions.lcmLong
 
 typealias Nodes = Map<String, Pair<String, String>>
 fun main(){
@@ -55,16 +56,7 @@ fun main(){
         }
     }
 
-    val lcm = {x: Long, y: Long ->
-        var gcd = 1L
-        var index = 1L
-        while (index <= x && index <= y) {
-            if (x % index == 0L && y % index == 0L)
-                gcd = index
-            index++
-        }
-        x * y / gcd
-    }
+
 
     val input = resourceAsListOfString("src/day08/Day08.txt")
     val instructions = input.first()
@@ -73,6 +65,6 @@ fun main(){
     val end = "ZZZ"
     val starts = nodes.filter { it.key.last() == 'A' }.keys.toList()
     println(part1(start, end, instructions, nodes))
-    println(starts.map{ part2(it, instructions, nodes)}.reduce(lcm))
+    println(starts.map{ part2(it, instructions, nodes)}.reduce(lcmLong))
 
 }
