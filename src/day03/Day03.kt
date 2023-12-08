@@ -19,27 +19,25 @@ fun main(){
     }
 
 
-
     fun parseInput(input: List<String>) {
         val regex: Regex = """(?<=[&*@$#%/\-+=])|(?=[&*@$#%/\-+=])""".toRegex()
         input.forEachIndexed { indexRow, row ->
-            val partsOrSymbols = row.split(".").filterNot { it.isEmpty() }
-                .map { it.split(regex) }.flatten().filterNot { it.isEmpty() }
-            partsOrSymbols.forEachIndexed() { index, it ->
-
+            val partsOrSymbols = row.split(".").filterNot { it.isEmpty() }.map { it.split(regex) }.flatten().filterNot { it.isEmpty() }
+            partsOrSymbols.forEach{ it ->
                 when {
                     it.toIntOrNull() == null -> {
                         val indices = Regex("""\$it""").findAll(row).map { it.range.first }.toList()
                         indices.forEach { indice -> symbols.add(Symbol(it, Point(indexRow, indice)))}
                     }
                     else -> {
-                        val indices = Regex("""$it""").findAll(row).map { it.range.first }.toList()
-                        indices.forEach {  indice -> parts.add(Part(Pair(indexRow, index), it.toInt(), createPoints(indexRow, indice, indice+it.length)))}
+                        val indices = Regex("""(?<=[&*@${'$'}#%/\-+=.])$it(?=[&*@${'$'}#%/\-+=.])|^$it|$it$""").findAll(row).map { it.range.first }.toList()
+                        indices.forEach {  indice ->
+                                parts.add(Part(Pair(indexRow, indice), it.toInt(), createPoints(indexRow, indice, indice+it.length)))
+                            }
                     }
                 }
             }
         }
-
     }
 
     fun part1(): Int{
@@ -49,14 +47,29 @@ fun main(){
             partNumbers.addAll(parts.map { part -> Part.returnNumberIfIntersecting(part, adjacentPoints) })
 
         }
-        println(partNumbers.filterNot { it.second == 0 }.count())
         return partNumbers.sumOf { it.second }
     }
 
+    fun part2(): Int{
+        val possibleGears = symbols.filter { it.value == "*" }
+        val gearRatio = mutableListOf<Int>()
+        possibleGears.forEach { gear ->
+            val adjacentPoints = neighbors.map { it + gear.point }.toSet()
+            val gearCheck = parts.map { part -> Part.ifIntersecting(part,adjacentPoints) }
+            when {
+                gearCheck.count { it != 0 } == 2 -> {
+                    val gf = gearCheck.filterNot { it == 0 }
+                    gearRatio.add(gf.first()*gf.last())
+                }
+                else -> {}
+            }
+        }
+        return gearRatio.sum()
+    }
+
     parseInput(input)
-    println(parts.count())
-    println(symbols.count())
     println(part1())
+    println(part2())
 }
 
 private operator fun Point.plus(that: Point): Point =
@@ -76,6 +89,12 @@ data class Part(
             return when{
                 (part.points intersect points).isNotEmpty()-> Pair(part.id,part.number)
                 else -> Pair(Pair(0,0), 0)
+            }
+        }
+        fun ifIntersecting(part: Part, points: Set<Point>): Int{
+            return when{
+                (part.points intersect points).isNotEmpty()-> part.number
+                else -> 0
             }
         }
     }
