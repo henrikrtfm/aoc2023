@@ -23,4 +23,17 @@ internal object Functions {
         }
         x * y / gcd
     }
+
+    fun List<Int>.generateDifference(): List<Int> {
+        return this.windowed(2, 1).map { (it[1] - it[0])}
+    }
+    tailrec fun findNextInSequence(list: List<Int>, acc: Int = 0): Int {
+        val nextSeq = list.generateDifference()
+        val result = acc + list.last()
+        return if (nextSeq.all { it == 0 }) {
+            result
+        } else {
+            findNextInSequence(nextSeq, result)
+        }
+    }
 }
