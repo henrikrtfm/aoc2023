@@ -4,56 +4,57 @@ import utils.Resources.resourceAsListOfString
 
 fun main(){
 
-    val chars = listOf('.', '#')
-
-    fun parseInput(input: List<String>): List<Pair<String, List<Int>>>{
-        return input.map { Pair(it.substringBefore(" "), it.substringAfter(" ").split(",").map { it.toInt() }) }
+    fun parseRow(input: String): Pair<String, List<Int>> {
+        return input.split(" ").run {
+            first() to last().split(",").map { it.toInt() }
+        }
     }
 
-    fun generateCombinations(n: Int): List<String> {
-        val result = mutableListOf<String>()
-        val queue = mutableListOf<String>()
-        queue.add("")
-        while (queue.isNotEmpty()) {
-            val current = queue.removeAt(0)
-            if (current.length == n) {
-                result.add(current)
-            } else {
-                for (char in chars) {
-                    queue.add(current + char)
+    fun countArrangements( springs: String, damage: List<Int>, cache: MutableMap<Pair<String, List<Int>>, Long> = HashMap()): Long {
+        val key = springs to damage
+        cache[key]?.let {
+            return it
+        }
+        if (springs.isEmpty()) return if (damage.isEmpty()) 1 else 0
+
+        return when (springs.first()) {
+            '.' -> countArrangements(springs.dropWhile { it == '.' }, damage, cache)
+            '?' -> countArrangements(springs.substring(1), damage, cache) +
+                        countArrangements("#${springs.substring(1)}", damage, cache)
+            '#' -> when {
+                damage.isEmpty() -> 0
+                else -> {
+                    val thisDamage = damage.first()
+                    val remainingDamage = damage.drop(1)
+                    if (thisDamage <= springs.length && springs.take(thisDamage).none { it == '.' }) {
+                        when {
+                            thisDamage == springs.length -> if (remainingDamage.isEmpty()) 1 else 0
+                            springs[thisDamage] == '#' -> 0
+                            else -> countArrangements(springs.drop(thisDamage + 1), remainingDamage, cache)
+                        }
+                    } else 0
                 }
             }
-        }
-        return result
-    }
 
-    tailrec fun replaceChars(springs: String, combination: String): String{
-        val newString = springs.replaceFirst('?', combination.first())
-        val newCombination = combination.drop(1)
-        return if (newCombination.isEmpty()) {
-            newString
-        } else {
-            replaceChars(newString, newCombination )
+            else -> throw IllegalStateException("Invalid springs: $springs")
+        }.apply {
+            cache[key] = this
         }
     }
-
-    fun findArrangements(row: Pair<String, List<Int>>):Int{
-        val springs = row.first
-        val sizes = row.second
-        val combinations = generateCombinations(springs.count { it == '?' })
-        val possibleArrangements = combinations.map{combination -> replaceChars(springs,combination)}
-            .map{it.split(".").filter { it.isNotEmpty() }.map{it.length}}.filter { it == sizes }
-        return possibleArrangements.count()
-
+    fun part1(input: List<String>): Long{
+        return input.map { parseRow(it) }
+            .sumOf { (springs, damage) -> countArrangements(springs, damage) }
     }
-
-    fun part1(rows: List<Pair<String, List<Int>>>): Int{
-        return rows.sumOf { row -> findArrangements(row) }
-
+    fun part2(input: List<String>): Long {
+        return input.map { parseRow(it) }
+                .map { unfold(it) }
+                .sumOf { (springs, damage) -> countArrangements(springs, damage) }
     }
-
     val input = resourceAsListOfString("src/day12/Day12.txt")
-    val rows = parseInput(input)
-    println(part1(rows))
+    println(part1(input))
+    println(part2(input))
 
 }
+
+private fun unfold(input: Pair<String, List<Int>>): Pair<String, List<Int>> =
+    (0..4).joinToString("?") { input.first } to (0..4).flatMap { input.second }
