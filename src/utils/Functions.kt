@@ -24,6 +24,28 @@ internal object Functions {
         x * y / gcd
     }
 
+    fun Array<CharArray>.rotateLeft(): Array<CharArray> {
+        val rows = this.size
+        val cols = this[0].size
+
+        return (0 ..<cols).map { x ->
+            (0 ..<rows).map { y ->
+                this[y][cols - 1 - x]
+            }.toCharArray()
+        }.toTypedArray()
+    }
+
+    fun Array<CharArray>.rotateRight(): Array<CharArray> {
+        val rows = this.size
+        val cols = this[0].size
+
+        return (0..<cols).map { x ->
+            (0..<rows).map { y ->
+                this[rows - 1 - y][x]
+            }.toCharArray()
+        }.toTypedArray()
+    }
+
     fun List<Int>.generateDifference(): List<Int> {
         return this.windowed(2, 1).map { (it[1] - it[0])}
     }
@@ -36,4 +58,9 @@ internal object Functions {
             findNextInSequence(nextSeq, result)
         }
     }
+
+    fun <E> List<E>.cartesianPairs(): List<Pair<E, E>> =
+        this.flatMapIndexed { index, left ->
+            this.indices.drop(index).map { right -> left to this[right] }
+        }
 }
