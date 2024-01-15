@@ -1,8 +1,8 @@
 package day11
 
-import utils.Functions.cartesianPairs
+import utils.cartesianPairs
 import utils.Resources.resourceAsListOfString
-import utils.Functions.rotateLeft
+import utils.rotateLeft
 import kotlin.math.absoluteValue
 
 fun main(){

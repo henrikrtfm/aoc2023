@@ -1,7 +1,6 @@
 package day08
 
 import utils.Resources.resourceAsListOfString
-import utils.Functions.lcmLong
 
 typealias Nodes = Map<String, Pair<String, String>>
 fun main(){
@@ -65,6 +64,13 @@ fun main(){
     val end = "ZZZ"
     val starts = nodes.filter { it.key.last() == 'A' }.keys.toList()
     println(part1(start, end, instructions, nodes))
-    println(starts.map{ part2(it, instructions, nodes)}.reduce(lcmLong))
+    println(starts.map{ part2(it, instructions, nodes)}.reduce(Long::lcm))
 
 }
+
+tailrec fun Long.gcd(other: Long): Long =
+    if (other == 0L) this
+    else other.gcd(this % other)
+
+fun Long.lcm(other: Long): Long =
+    (this * other) / this.gcd(other)

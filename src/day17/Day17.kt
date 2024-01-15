@@ -1,9 +1,9 @@
 package day17
 
-import utils.Functions.get
+import utils.get
 import utils.Resources.resourceAsListOfString
 import utils.Point2D
-import utils.Functions.isSafe
+import utils.isSafe
 import utils.Point2D.Companion.NORTH
 import utils.Point2D.Companion.SOUTH
 import utils.Point2D.Companion.EAST
